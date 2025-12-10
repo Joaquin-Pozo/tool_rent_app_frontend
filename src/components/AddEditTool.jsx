@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import toolService from "../services/toolService";
+import ErrorPopup from "../components/ErrorPopup";
 import { Box, TextField, Button, FormControl, MenuItem } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 
@@ -12,13 +13,51 @@ const AddEditTool = () => {
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
   const [currentStateId, setCurrentStateId] = useState(1); // por defecto es Disponible
+  const [openError, setOpenError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const { id } = useParams();
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
 
-  const saveTool = (e) => {
+  const saveTool = async (e) => {
     e.preventDefault();
+    
+    // Validar que no sean cadenas vacías o espacios
+    if (!name.trim()) {
+      setErrorMessage("El nombre es obligatorio");
+      setOpenError(true);
+      return;
+    }
+    if (!category.trim()) {
+      setErrorMessage("La categoría es obligatoria");
+      setOpenError(true);
+      return;
+    }
+
+    // Validar Costo de Reposición (Numérico y positivo)
+    // isNaN comprueba si NO es un número.
+    if (!replacementCost || isNaN(replacementCost) || Number(replacementCost) <= 0) {
+      setErrorMessage("El costo de reposición debe ser un número mayor a 0");
+      setOpenError(true);
+      return;
+    }
+
+    // Validar Precio (Numérico y no negativo)
+    if (price === "" || isNaN(price) || Number(price) <= 0) {
+      setErrorMessage("El precio debe ser un número válido mayor a 0");
+      setOpenError(true);
+      return;
+    }
+
+    // Validar Stock (Entero y positivo)
+    // Number.isInteger verifica que no tenga decimales
+    if (!stock || isNaN(stock) || Number(stock) < 0 || !Number.isInteger(Number(stock))) {
+      setErrorMessage("El stock debe ser un número entero mayor o igual a 0");
+      setOpenError(true);
+      return;
+    }
+    
 
     const tool = {
       id,
@@ -31,12 +70,21 @@ const AddEditTool = () => {
       currentState: { id: currentStateId },
     };
 
-    if (id) {
-      // Actualiza los datos de la herramienta
-      toolService.update(tool).then(() => navigate("/tool/list"));
-    } else {
-      // Agrega una nueva herramienta
-      toolService.create(tool).then(() => navigate("/tool/list"));
+    try {
+      if (id) {
+        // Actualiza los datos de la herramienta
+        await toolService.update(tool).then(() => navigate("/tool/list"));
+      } else {
+        // Agrega una nueva herramienta
+        await toolService.create(tool).then(() => navigate("/tool/list"));
+      }
+      navigate("/tool/list");
+    } catch (error) {
+      console.error("Error en la solicitud: ", error);
+
+      const backendMessage = error.response?.data?.message || "Error al procesar la solicitud.";
+      setErrorMessage(backendMessage);
+      setOpenError(true);
     }
   };
 
@@ -66,8 +114,9 @@ const AddEditTool = () => {
     flexDirection="column" 
     alignItems="center" 
     justifyContent="center">
+      
       <h3>{title}</h3>
-      <form>
+
         <FormControl fullWidth>
           <TextField
             id="toolIdentifier"
@@ -155,7 +204,6 @@ const AddEditTool = () => {
           </TextField>
         </FormControl>
 
-        <br />
         <Button
           variant="contained"
           color="primary"
@@ -164,8 +212,12 @@ const AddEditTool = () => {
         >
           Guardar
         </Button>
-      </form>
-      <hr />
+
+      <ErrorPopup 
+        open={openError}
+        message={errorMessage}
+        onClose={() => setOpenError(false)}
+      />
       <Link to="/tool/list">Volver a la Lista</Link>
     </Box>
   );
