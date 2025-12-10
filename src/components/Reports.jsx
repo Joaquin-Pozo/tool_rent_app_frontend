@@ -10,7 +10,6 @@ import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import MenuItem from "@mui/material/MenuItem";
 
 const Reports = () => {
   const [activeLoans, setActiveLoans] = useState([]);
@@ -49,6 +48,16 @@ const Reports = () => {
       setRanking(res.data);
     })
     .catch(err => console.error("Error cargando ranking de herramientas", err.data));
+  };
+
+  const formatDate = (dateTimeStr) => {
+    if (!dateTimeStr) return "-";
+    const date = new Date(dateTimeStr);
+    return date.toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
   };
 
   // Lista ranking de las herramientas más prestadas
@@ -139,8 +148,8 @@ const Reports = () => {
                 <TableCell>{l.client?.name}</TableCell>
                 <TableCell>{l.tool?.name}</TableCell>
                 <TableCell>{l.currentState?.name}</TableCell>
-                <TableCell>{l.deliveryDate}</TableCell>
-                <TableCell>{l.returnDate}</TableCell>
+                <TableCell>{formatDate(l.deliveryDate)}</TableCell>
+                <TableCell>{formatDate(l.returnDate)}</TableCell>
               </TableRow>
             ))}
           </TableBody>

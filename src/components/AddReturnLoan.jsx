@@ -43,7 +43,7 @@ const AddReturnLoan = () => {
     try {
       if (id) {
       // Devuelve un préstamo
-      loanService.returnLoan(loan).then(() => navigate("/loan/list"));
+      await loanService.returnLoan(loan).then(() => navigate("/loan/list"));
     } else {
       // Registra un nuevo préstamo
       await loanService.create(loan).then(() => navigate("/loan/list"));
@@ -89,6 +89,16 @@ const AddReturnLoan = () => {
       setTitle("Registrar Préstamo");
     }
   }, [id]);
+
+  const formatDate = (dateTimeStr) => {
+    if (!dateTimeStr) return "-";
+    const date = new Date(dateTimeStr);
+    return date.toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
 
   // Si es devolución, se deshabilitan ciertos campos
   const disabledFields = Boolean(id);

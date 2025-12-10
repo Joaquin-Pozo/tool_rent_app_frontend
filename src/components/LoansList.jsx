@@ -36,6 +36,16 @@ const LoansList = () => {
     .catch(err => console.log("Error actualizando estado atrasado" ,err));
   }
 
+  const formatDate = (dateTimeStr) => {
+    if (!dateTimeStr) return "-";
+    const date = new Date(dateTimeStr);
+    return date.toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
   const handleReturn = (id) => {
     navigate(`/loan/return/${id}`);
   };
@@ -89,8 +99,8 @@ const LoansList = () => {
                 <TableCell>{l.client?.name}</TableCell>
                 <TableCell>{l.tool?.name}</TableCell>
                 <TableCell>{l.currentState?.name}</TableCell>
-                <TableCell>{l.deliveryDate}</TableCell>
-                <TableCell>{l.returnDate}</TableCell>
+                <TableCell>{formatDate(l.deliveryDate)}</TableCell>
+                <TableCell>{formatDate(l.returnDate)}</TableCell>
                 <TableCell>{l.damaged ? "Sí" : "No"}</TableCell>
                 <TableCell>{l.totalFine ?? "-"}</TableCell>
                 <TableCell>

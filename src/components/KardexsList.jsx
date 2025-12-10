@@ -38,6 +38,16 @@ const KardexsList = () => {
       .catch(err => console.error("Error cargando herramientas:", err));
   };
 
+  const formatDate = (dateTimeStr) => {
+    if (!dateTimeStr) return "-";
+    const date = new Date(dateTimeStr);
+    return date.toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
     const handleFilter = () => {
     kardexService.filter(toolId || null, fromDate || null, toDate || null)
       .then(res => setKardexs(res.data))
@@ -117,7 +127,7 @@ const KardexsList = () => {
           <TableBody>
             {kardexs.map(k => (
               <TableRow key={k.id}>
-                <TableCell>{k.movementDate}</TableCell>
+                <TableCell>{formatDate(k.movementDate)}</TableCell>
                 <TableCell>{k.tool?.name}</TableCell>
                 <TableCell>{k.type?.name}</TableCell>
                 <TableCell>{k.quantity}</TableCell>
