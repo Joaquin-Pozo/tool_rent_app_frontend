@@ -60,9 +60,18 @@ const AddReturnLoan = () => {
   };
 
   useEffect(() => {
-    // cargar clientes y herramientas
-    clientService.getAll().then((res) => setClients(res.data));
-    toolService.getAll().then((res) => setTools(res.data));
+    // carga clientes disponibles
+    clientService.getAll().then((res) => {
+      // filtra por clientes activos
+      const activeClients = res.data.filter((c) => c.currentState?.name === "Activo");
+      setClients(activeClients);
+    });
+    // carga herramientas disponibles
+    toolService.getAll().then((res) => {
+      // filtra por herramientas disponibles
+      const activeTools = res.data.filter((c) => c.currentState?.name === "Disponible");
+      setTools(activeTools);
+    });
 
     if (id) {
       setTitle("Devolver Préstamo");
