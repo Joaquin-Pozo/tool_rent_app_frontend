@@ -38,12 +38,10 @@ const LoansList = () => {
 
   const formatDate = (dateTimeStr) => {
     if (!dateTimeStr) return "-";
-    const date = new Date(dateTimeStr);
-    return date.toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
+    
+    const datePart = dateTimeStr.split('T')[0]; // Se asegura de tomar solo YYYY-MM-DD
+    const [year, month, day] = datePart.split('-');
+    return `${day}/${month}/${year}`;
   };
 
   const handleReturn = (id) => {
