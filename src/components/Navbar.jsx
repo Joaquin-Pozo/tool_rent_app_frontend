@@ -34,7 +34,7 @@ export default function Navbar() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             SisGH: Sistema de Gestión de Herramientas
           </Typography>
-          <Button color="inherit">Login</Button>
+
         </Toolbar>
       </AppBar>
 
